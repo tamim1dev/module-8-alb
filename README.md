@@ -1,7 +1,7 @@
 # High-Availability Web Service with Load Balancing
 
 **Name:** Tamim
-**Student ID:** `<YOUR-STUDENT-ID>`
+**Student ID:** `01998750773`
 **Chosen option:** **Option B – NGINX Load Balancer (local, Docker)**
 
 A highly available web service for the fictional start-up ShopFast. An open-source NGINX load balancer distributes traffic across two web servers placed in two simulated Availability Zones. If one server (or a whole simulated AZ) fails, users keep getting normal responses, and the server is brought back into rotation automatically once it recovers.
