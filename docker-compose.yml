@@ -1,0 +1,60 @@
+services:
+  web1:
+    image: nginx:alpine
+    container_name: web1
+    volumes:
+      - ./web1/index.html:/usr/share/nginx/html/index.html:ro
+      - ./web1/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      az_a:
+        ipv4_address: 172.20.1.10
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 2
+
+  web2:
+    image: nginx:alpine
+    container_name: web2
+    volumes:
+      - ./web2/index.html:/usr/share/nginx/html/index.html:ro
+      - ./web2/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      az_b:
+        ipv4_address: 172.20.2.10
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 2
+
+  lb:
+    image: nginx:alpine
+    container_name: lb
+    ports:
+      - "8080:80"
+    volumes:
+      - ./lb/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      web1:
+        condition: service_healthy
+      web2:
+        condition: service_healthy
+    networks:
+      - az_a
+      - az_b
+      - public
+
+networks:
+  az_a:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+  az_b:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24
+  public:
